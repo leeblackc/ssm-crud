@@ -211,7 +211,6 @@
 
 	<!-- ============================================================== -->
 	<!-- 添加用户成功提示框 -->
-	<!-- 用户添加模态框 -->
 	<div class="modal fade" tabindex="-1" role="dialog"
 		id="userSaveSuccessModal">
 		<div class="modal-dialog" role="document">
@@ -236,10 +235,70 @@
 		<!-- /.modal-dialog -->
 	</div>
 	<!-- /.modal -->
+	
+	
+	
+	
+	
+	<!-- 单个用户删除弹出提示模态框 -->
+	<div class="modal fade" tabindex="-1" role="dialog"
+		id="userDeleteOneModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">删除用户</h4>
+				</div>
+				<div class="modal-body"  >
+					<p id="delete_one_msg"></p>
+					<input type="hidden" value="" id="delete_user_id">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" id="delete_one_confirm_btn" >确定</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	
+	<!--  删除成功提示框-->
+	<div class="modal fade" tabindex="-1" role="dialog"
+		id="deleteSuccessModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">删除用户</h4>
+				</div>
+				<div class="modal-body"  >
+					<p id="">删除成功！</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" id="delete_success_confirm_btn" >确定</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 
 	<!--分页js  -->
 	<script type="text/javascript">
+	//最大页数
 	var maxpage;
+	//当前页数
+	var currentPage;
 		$(document).ready(function() {
 			//默认加载页面时展示第一页
 			to_page(1);
@@ -273,7 +332,7 @@
 					.each(
 							users,
 							function(index, item) {
-								var checkBoxTd = $("<td><input type='checkbox' class='check_item'/></td>");
+								var checkBoxTd = $("<td><input type='checkbox' class='check_item' id='"+item.userid+"'/></td>");
 								var userIdTd = $("<td></td>").append(
 										item.userid);
 								var userNameTd = $("<td></td>").append(
@@ -286,12 +345,15 @@
 										item.type == "1" ? "管理员" : "普通用户");
 								var manageTd = $("<td></td>")
 										.append(
-												"<a><span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>编辑明细</a>")
+												"<a href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>编辑</a>")
 										.append(
-												"<a><span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>修改密码</a>")
+												"<a href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span>明细</a>")
 										.append(
-												"<a><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>删除</a>");
+												"<a href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>修改密码</a>")
+										.append(
+												"<a href=\"javascript:void(0);\" onclick=\"open_delete_confirm_modal('"+item.userid+"')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>删除</a>");
 								//append方法执行完成以后还是返回原来的元素
+								
 								$("<tr></tr>").append(checkBoxTd).append(
 										userIdTd).append(userNameTd).append(
 										accountTd).append(passwordTd).append(
@@ -315,6 +377,7 @@
 			var ul = $("#page_nav_area");
 			var navigatepageNums = result.data.pageInfo.navigatepageNums;
 			maxpage = result.data.pageInfo.pages+1;
+			currentPage =  result.data.pageInfo.pageNum;
 			//构建元素首页、下一页
 			var firstPageLi = $("<li></li>").append(
 					$("<a></a>").append("首页").attr("href",
@@ -377,12 +440,49 @@
 			//添加下一页和末页 的提示
 			ul.append(nextPageLi).append(lastPageLi);
 		}
-	</script>
-	<script type="text/javascript">
+		
+		function open_delete_confirm_modal(uid){
+			
+			$("#userDeleteOneModal").modal({
+				backdrop : "static"
+			});
+			$("#delete_user_id").val(uid);
+			$("#delete_one_msg").empty().append("是否删除用户："+uid);
+		}
+		
+		
+		$("#delete_one_confirm_btn").click(function(){
+			var uid = $("#delete_user_id").val();
+			log(uid);
+			$.ajax({
+				url:"${path}/user/"+uid,
+				type:"DELETE",
+				success:function(result){
+					$("#userDeleteOneModal").modal('hide');
+					$("#deleteSuccessModal").modal({
+						backdrop : "static"
+					});
+					//回到本页
+					to_page(currentPage);
+				}
+				
+				
+			});
+		}) ;
+		$("#delete_success_confirm_btn").click(function(){
+			$("#deleteSuccessModal").modal('hide');
+		})
+		
+		
+		/* function delete_one(uid){
+			
+		} */
+		
+	<!-- </script>
+	<script type="text/javascript"> -->
 	
 	var log = console.log;
 	$(document).ready(function() {
-		//默认加载页面时展示第一页
 	
 	
 		$("#user_add_btn").click(function() {
@@ -414,15 +514,12 @@
 		var regName = /(^[a-zA-Z0-9_-]{3,12}$)|(^[\u2E80-\u9FFF]{2,5})/;
 		var regAccount= /^[a-zA-Z0-9_-]{3,12}$/;
 		var regPassword= /^[a-zA-Z0-9_-]{6,12}$/;
+		
 		//用户名输入框失焦时触发校验
-		$("#username").blur(function(){
-			
+		$("#username").blur(function(){		
 			check_username();
-		});
-				
-				
-		function check_username() {
-			
+		});			
+		function check_username() {		
 			//if($("#account").val()==""||$.trim($("#account").val())==""){
 			//log("null")
 			/* $("#account_input").removeClass("has-success");
@@ -447,13 +544,13 @@
 				}
 			}
 		}
+		
+		
 		//账号输入框失焦时触发校验功能
 		$("#account").blur(function(){
 			check_account();
-		});
-		
-		function check_account() {
-			
+		});		
+		function check_account() {			
 			if ($("#account").val() == "" || $.trim($("#account").val()) == "") {
 				show_validate_msg("#account", "fail", "帐户名不能为空或空格");
 				$("#account").val("");
@@ -529,9 +626,9 @@
 		$("#user_save_btn").click(function() {
 			//前端校验数据是否正确
 
-			log("check_username:"+check_username());
+			/* log("check_username:"+check_username());
 			log("check_account:"+check_account());
-			log("check_password:"+check_password());
+			log("check_password:"+check_password()); */
 			if (check_username() && check_account() && check_password()) {							
 				log($("#user_add_form").serialize())
 				//2、发送ajax请求保存员工
@@ -568,7 +665,7 @@
 		//保存成功点击确认清空新增用户模态框的信息
 		$("#user_save_success_modal_btn").click(function(){
 			$("#userSaveSuccessModal").modal('hide');
-			log(1)
+			/* log(1) */
 			to_page(maxpage);
 		})
 		/*  =======================================================================*/
@@ -577,7 +674,12 @@
 			log(username)
 
 		}
-
+		
+		
+		//弹出删除确认框
+		/* open_delete_confirm_modal= function (uid){
+				alert(uid);
+		} */
 		$("#check_all").click(function() {
 			/* 	console.log($(this).prop("checked")) */
 			$(".check_item").prop("checked", $(this).prop("checked"));

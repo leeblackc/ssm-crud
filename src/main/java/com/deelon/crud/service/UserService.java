@@ -36,5 +36,10 @@ public class UserService {
 		userMapper.insertSelective(user);
 		
 	}
+
+	public void deleteUser(Integer id) {
+		// TODO Auto-generated method stub
+		userMapper.deleteByPrimaryKey(id);
+	}
 	
 }
