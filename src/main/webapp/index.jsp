@@ -17,10 +17,10 @@
 <script type="text/javascript"
 	src="${APP_PATH }/static/js/jquery-1.12.4.min.js"></script>
 <link
-	href="${APP_PATH }/static/bootstrap-3.3.7-dist/css/bootstrap.min.css"
+	href="${APP_PATH }/static/bootstrap/css/bootstrap.min.css"
 	rel="stylesheet">
 <script
-	src="${APP_PATH }/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	src="${APP_PATH }/static/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 <!-- 员工修改的模态框 -->
@@ -428,12 +428,12 @@
 			//1、先对要提交给服务器的数据进行校验
 			if(!validate_add_form()){
 				return false;
-			};
+			}; 
 			//1、判断之前的ajax用户名校验是否成功。如果成功。
-			if($(this).attr("ajax-va")=="error"){
+			 if($(this).attr("ajax-va")=="error"){
 				return false;
-			}
-			
+			} 
+			console.log($("#empAddModal form").serialize());
 			//2、发送ajax请求保存员工
 			$.ajax({
 				url:"${APP_PATH}/emp",

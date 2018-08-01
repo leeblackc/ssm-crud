@@ -1,10 +1,17 @@
 package com.deelon.crud.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -13,6 +20,8 @@ import com.deelon.crud.model.User;
 import com.deelon.crud.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import guigu.bean.Employee;
 
 @Controller
 public class UserController {
@@ -33,4 +42,41 @@ public class UserController {
 		return Msg.success().add("pageInfo", page);
 		
 	}
-}
+	
+	/**
+	 * 检查账户是否可用
+	 * @param account
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/checkaccount")
+	public Msg checkuser(@RequestParam("account")String account){
+		
+		
+		//数据库用户名重复校验
+		boolean b = userService.checkUser(account);
+		if(b){
+			return Msg.success();
+		}else{
+			return Msg.fail();
+		}
+	}
+	
+	/**
+	 * 员工保存
+	 * 
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value="/user",method=RequestMethod.POST)
+	@ResponseBody
+	public Msg saveEmp(User user){
+		
+			userService.saveUser(user);
+			return Msg.success();
+		}
+		
+	}
+	
+	
+
